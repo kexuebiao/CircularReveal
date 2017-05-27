@@ -61,6 +61,11 @@ public final class ViewAnimationUtils {
    */
   public static Animator createCircularReveal(View view, int centerX, int centerY,
       float startRadius, float endRadius, int layerType) {
+    return createCircularReveal(view,centerX,centerX,startRadius,endRadius,layerType,false);
+  }
+
+  public static Animator createCircularReveal(View view, int centerX, int centerY,
+                                              float startRadius, float endRadius, int layerType,boolean oppositeAnim) {
 
     if (!(view.getParent() instanceof RevealViewGroup)) {
       throw new IllegalArgumentException("Parent must be instance of RevealViewGroup");
@@ -69,12 +74,13 @@ public final class ViewAnimationUtils {
     final RevealViewGroup viewGroup = (RevealViewGroup) view.getParent();
     final ViewRevealManager rm = viewGroup.getViewRevealManager();
 
-    if (!rm.overrideNativeAnimator() && LOLLIPOP_PLUS) {
-      return android.view.ViewAnimationUtils.createCircularReveal(view, centerX, centerY,
-          startRadius, endRadius);
-    }
+//    if (!rm.overrideNativeAnimator() && LOLLIPOP_PLUS) {
+//      return android.view.ViewAnimationUtils.createCircularReveal(view, centerX, centerY,
+//          startRadius, endRadius);
+//    }
 
     final RevealValues viewData = new RevealValues(view, centerX, centerY, startRadius, endRadius);
+    viewData.setOppositeAnim(oppositeAnim);
     final Animator animator = rm.dispatchCreateAnimator(viewData);
 
     if (layerType != view.getLayerType()) {

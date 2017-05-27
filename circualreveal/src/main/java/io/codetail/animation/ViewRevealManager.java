@@ -9,8 +9,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Region;
 import android.os.Build;
+import android.util.Log;
 import android.util.Property;
 import android.view.View;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -143,6 +145,12 @@ public class ViewRevealManager {
 
   public static final class RevealValues {
     private static final Paint debugPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    //是否反向动画
+    boolean isOppositeAnim = false;
+
+    public void setOppositeAnim(boolean oppositeAnim) {
+      isOppositeAnim = oppositeAnim;
+    }
 
     static {
       debugPaint.setColor(Color.GREEN);
@@ -234,10 +242,21 @@ public class ViewRevealManager {
     @Override public boolean transform(Canvas canvas, View child, RevealValues values) {
       path.reset();
       // trick to applyTransformation animation, when even x & y translations are running
-      path.addCircle(child.getX() + values.centerX, child.getY() + values.centerY, values.radius,
-          Path.Direction.CW);
+      if (values.isOppositeAnim) {
+        op = Region.Op.DIFFERENCE;
+      } else {
+        op = Region.Op.REPLACE;
+      }
+      // trick to applyTransformation animation, when even x & y translations are running
 
-      canvas.clipPath(path, op);
+      Log.e("XXX", "transform: " + values.startRadius + " <> " + values.endRadius);
+      if (values.isOppositeAnim) {
+        path.addCircle(child.getX() + values.centerX, child.getY() + values.centerY, (values.startRadius + values.endRadius - values.radius),
+                Path.Direction.CW);
+      } else {
+        path.addCircle(child.getX() + values.centerX, child.getY() + values.centerY, values.radius,
+                Path.Direction.CW);
+      }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         child.invalidateOutline();
