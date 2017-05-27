@@ -249,7 +249,6 @@ public class ViewRevealManager {
       }
       // trick to applyTransformation animation, when even x & y translations are running
 
-      Log.e("XXX", "transform: " + values.startRadius + " <> " + values.endRadius);
       if (values.isOppositeAnim) {
         path.addCircle(child.getX() + values.centerX, child.getY() + values.centerY, (values.startRadius + values.endRadius - values.radius),
                 Path.Direction.CW);
@@ -258,6 +257,7 @@ public class ViewRevealManager {
                 Path.Direction.CW);
       }
 
+      canvas.clipPath(path, op);
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         child.invalidateOutline();
       }
